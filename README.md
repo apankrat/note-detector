@@ -11,6 +11,8 @@ using MPM's peak detection. See below for details.
 
 Live test page - https://swapped.ch/note-detector
 
+Screenscap of it in action - https://swapped.ch/note-detector/screencap.mp4
+
 # Background
 
 This code is a part of a piano trainer web app that helps with learning 
