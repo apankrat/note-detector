@@ -1,0 +1,436 @@
+<!doctype html>
+<html>
+<head>
+<title>NoteDetector 0.1</title>
+<!--
+	
+	Copyright (c) 2020 Alexander Pankratov, <ap@swapped.ch>
+	https://swapped.ch/note-detector
+	
+	Distributed under the terms of the 2-clause BSD license. 
+	https://www.opensource.org/licenses/bsd-license.php
+	
+-->
+<style>
+	body {
+		background: #123;
+		color: #fff;
+		font-family: segoe ui, sans-serif;
+		font-size: 13px;
+	}
+
+	#go {
+		background: #15a7ffb3;
+		width: 96px;
+		height: 32px;
+		margin: 32px auto 0;
+
+		text-align: center;
+		line-height: 32px;
+		border-radius: 2px;
+
+		box-shadow: 0 2px 5px #0007;
+		cursor: pointer;
+	}
+
+	#go.active {
+		background: #d30;
+		box-shadow: none;
+	}
+
+	#show-options {
+		text-align: center;
+		margin-top: 16px;
+	}
+
+	#show-options a {
+		text-decoration: none;
+		color: #fff8;
+	}
+
+	#show-options a:hover {
+		color: #fffb;
+	}
+
+	#options {
+		display: none;
+		margin: 16px auto 24px;
+	}
+
+	#options .opts {
+		text-align: center;
+		margin: 16px 0;
+	}
+
+	#options .opts div {
+		display: inline-block;
+		width: 100px;
+		height: 32px;
+		line-height: 32px;
+		margin: 0 5px;
+		border-radius: 2px;
+		background: #fff2;
+		color: #fff5;
+		box-shadow: 0 2px 5px #0007;
+		cursor: pointer;
+	}
+
+	#options .opts div:hover {
+		color: #fff7;
+	}
+
+	#options .opts div.active {
+		background: #fff4;
+		color: #fff;
+		box-shadow: none;
+	}
+
+	#graph {
+		margin: 16px auto;
+	}
+
+	#graph span {
+		display: block;
+		width: 830px;
+		height: 14px;
+		margin: -14px auto 0;
+		font-size: 11px;
+		text-transform: capitalize;
+		color: #fff9;
+		position: relative;
+		top: 20px;
+		left: 4px;
+	}
+
+	#graph canvas {
+		display: block;
+		background: #0004;
+		margin: 0 auto;
+		padding: 10px 20px;
+	}
+
+	#result {
+		background: #0004;
+		text-align: center;
+		width: 800px;
+		margin: 10px auto 20px;
+		padding: 10px 20px;
+		height: 24px;
+		font-size: 24px;
+		font-family: monospace;
+	}
+
+	#trace {
+		background: #0004;
+		color: #fffa;
+
+		width: 800px;
+		height: 200px;
+		margin: 0 auto 32px;
+		padding: 10px 20px;
+
+		font-family: monospace;
+		font-size: 12px;
+		line-height: 16px;
+		white-space: pre-wrap;
+
+		overflow-y: scroll;
+	}
+
+</style>
+</head>
+<body>
+	<div id=go>Go</div>
+
+	<div id=show-options><a href=#>Options</a></div>
+
+	<div id=options>
+		<div id=win-size class=opts>
+			<div id=x0k>512</div>
+			<div id=x1k>1024</div>
+			<div id=x2k class=active>2048</div>
+			<div id=x4k>4096</div>
+		</div>
+
+		<div id=win-type class=opts>
+			<div id=raw>None</div>
+			<div id=hann>Hann</div>
+			<div id=hamming class=active>Hamming</div>
+			<div id=blackman>Blackman</div>
+			<div id=lanczos>Lanczos</div>
+		</div>
+	</div>
+
+	<div id=graph>
+		<span></span>
+		<canvas width="800" height="128"></canvas>
+	</div>
+
+	<div id=result>Click Go and play a note</div>
+
+	<div id=trace></div>
+
+	<script type="text/javascript" src="https://code.jquery.com/jquery-1.8.3.min.js"></script>
+	<script type="text/javascript" src="note-detector.js"></script>
+	<script type="text/javascript" src="note-utils.js"></script>
+	<script type="text/javascript">
+		
+		'use strict';
+
+		var conf =
+		{
+			windowSize: 2048,
+			windowType: 'hamming'
+		};
+
+		//
+		var enough   = false;
+
+		var context  = null;
+		var stream   = null;
+		var source   = null;
+		var analyzer = null;
+
+		var detector = null;
+
+		var canvas   = null;
+		var render   = null;
+
+		//
+		function log(text)
+		{
+			var trace = document.getElementById('trace');
+			trace.innerHTML = text ? trace.innerHTML + text + '<br>' : '';
+			trace.scrollTop = trace.scrollHeight;
+		}
+
+		function plot(v_float, color, clear, f_min, f_max)
+		{
+			if (f_min == 0 && f_max == 0)
+			{
+				for (var i=0; i<v_float.length; i++)
+				{
+					if (v_float[i] > f_max) f_max = v_float[i];
+					if (v_float[i] < f_min) f_min = v_float[i];
+				}
+			}
+
+			var w = canvas.width;
+			var h = canvas.height;
+
+			if (clear)
+				render.clearRect(0,0,w,h);
+
+			render.strokeStyle = color;
+			render.beginPath();
+
+			for (let i=0, n=v_float.length; i<n; i++)
+			{
+				let x = i*w/n;
+				let f = v_float[i];
+				let y = h - 5 - (f - f_min) * (h-10) / (f_max - f_min);
+
+				if (i) render.lineTo(x, y);
+				else   render.moveTo(x, y);
+			}
+			
+			render.stroke();
+		}
+
+		//
+		function update()
+		{
+			var input_8 = analyzer.v_uint8;
+			var input_f = analyzer.v_float;
+			var note;
+			var desc;
+
+			analyzer.getByteTimeDomainData(input_8);
+
+			for (let i=0; i<input_8.length; i++)
+				input_f[i] = input_8[i] / 128.0 - 1.0;
+		
+			detector.update(input_f);
+
+			plot(detector.buf, '#08f', true, -1, +1);
+			
+			note = detector.getNote();
+			desc = (note && note.stable) ? hzToNoteString(note.freq) : '';
+
+			$('#result').html(desc);
+		}
+
+		//
+		function updateConfig()
+		{
+			const sizeMap = { x0k : 512, x1k : 1024, x2k : 2048, x4k : 4096 };
+			
+			conf.windowSize = sizeMap[ $('#win-size .active').attr('id') ];
+			conf.windowType = $('#win-type .active').attr('id');
+		}
+
+		function updateGraphTitle()
+		{
+			var $info = $('#graph span');
+			var title = (analyzer ? analyzer.fftSize : conf.windowSize) + ' / ' + conf.windowType;
+			if ($info.html() != title)
+				$info.html(title);
+		}
+
+		//
+		function initAnalyzer()
+		{
+			analyzer = context.createAnalyser();
+			analyzer.fftSize = conf.windowSize;
+			analyzer.v_uint8 = new Uint8Array  (conf.windowSize);
+			analyzer.v_float = new Float32Array(conf.windowSize);
+
+			source.connect(analyzer);
+//			analyzer.connect(context.destination);
+
+			detector = new NoteDetector(conf.windowSize, context.sampleRate, conf.windowType);
+			detector.trace = log;
+		}
+
+		//
+		function onUpdate()
+		{
+			if (enough)
+				return;
+			
+			update();
+			window.requestAnimationFrame( onUpdate );
+		}
+
+		function onOpened(_stream)
+		{
+			stream = _stream;
+
+			log('Ok');
+			log('sampleRate: ' + context.sampleRate);
+			log('windowSize: ' + conf.windowSize);
+			log('windowType: ' + conf.windowType);
+
+			source = context.createMediaStreamSource(stream);
+
+			initAnalyzer();
+
+			enough = false;
+			onUpdate();
+	
+			$("#go").html('Stop').addClass('active');
+		}
+
+		function onError(error)
+		{
+			log(error.message + ' / ' + error.name);
+		}
+
+		//
+		function start()
+		{
+			log('');
+
+			log('Creating AudioContext...');
+
+			try
+			{
+				window.AudioContext = window.AudioContext || window.webkitAudioContext;
+				context = new AudioContext();
+			}
+			catch (e)
+			{
+				log('Web Audio API not supported.');
+				return;
+			}
+
+			//
+			log('Requesting local audio stream...');
+
+			const opts = { audio: true, video: false };
+		
+			navigator.mediaDevices
+			.getUserMedia(opts)
+			.then(onOpened)
+			.catch(onError);
+		}
+
+		function stop()
+		{
+			log('Shutting down...');
+
+			enough = true;
+
+			if (detector) detector = null;
+			if (analyzer) analyzer = null;
+			if (source)   source   = null;
+
+			if (stream)
+			{
+				stream.getTracks().forEach(track => track.stop());
+				stream = null;
+			}
+
+			if (context) context = null;
+
+			$("#go").html("Go").removeClass('active')
+
+			log('Ok');
+		}
+
+		//
+		$('#go').click(function(){
+
+			if (stream) stop();
+			else        start();
+
+			return false;
+		});
+
+		$('#show-options').click(function(){
+
+			$('#options').toggle();
+			return false;
+		});
+
+		$('.opts div').click(function(){
+
+			var $this = $(this);
+
+			if ($this.hasClass('active'))
+				return false;
+
+			$this.parent().find('div').removeClass('active');
+			$this.addClass('active');
+
+			updateConfig();
+			updateGraphTitle();
+
+			if (analyzer)
+				initAnalyzer();
+
+			return false;
+		});
+
+		//
+		window.onerror = function(msg, file, line, col, error)
+		{
+			alert(msg + ', line/col ' + line + '/' + col + ', error ' + error);
+		}
+
+		if (! window.requestAnimationFrame)
+			window.requestAnimationFrame = window.webkitRequestAnimationFrame;
+
+		//
+		$(document).ready(function(){
+
+			canvas = $('#graph canvas')[0];;
+			render = canvas.getContext("2d");
+
+			updateConfig();
+			updateGraphTitle();
+		
+		});
+	</script>
+</body>
+</html>
