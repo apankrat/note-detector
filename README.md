@@ -184,21 +184,25 @@ Finally, it's called a *Piano* Note Detector, because that's basically what I've
 ### Articles
 
 * [Pitch detection algorithms](https://en.wikipedia.org/wiki/Pitch_detection_algorithm) on Wikipedia
-* [Fast Fourier transform](https://en.wikipedia.org/wiki/Fast_Fourier_transform)
-* [Constant-Q transform](https://en.wikipedia.org/wiki/Constant-Q_transform)
 * [Autocorrelation](https://en.wikipedia.org/wiki/Autocorrelation)
 
----
+<br>
+
+* [Fast Fourier transform](https://en.wikipedia.org/wiki/Fast_Fourier_transform)
+* [Constant-Q transform](https://en.wikipedia.org/wiki/Constant-Q_transform)
+
+
+<br>
 
 * [Window (signal tapering) functions](https://en.wikipedia.org/wiki/Window_function)
 * [Use of a window function with autocorrelation analysis](https://www.pinguinorodriguez.cl/blog/pitch-in-praat/) (in Praat)
 
----
+<br>
 
 * [Cepstrum](https://en.wikipedia.org/wiki/Cepstrum), a **S**pe**C**trum of spectrum.
 * [Cepstrum analysis for pitch tracking](http://flothesof.github.io/cepstrum-pitch-tracking.html)
 
----
+<br>
 
 * [Piano key frequencies](https://en.wikipedia.org/wiki/Piano_key_frequencies)
 * [Equal loudness contour](https://en.wikipedia.org/wiki/Equal-loudness_contour) and [A-weighting](https://en.wikipedia.org/wiki/A-weighting)
@@ -209,7 +213,7 @@ Finally, it's called a *Piano* Note Detector, because that's basically what I've
 * [Aubio](https://aubio.org) - A library to label music and sounds (in C language) / [git repo](https://github.com/aubio/aubio)
 * [Praat](https://www.fon.hum.uva.nl/praat/) - Doing phonetics by computer / [git repo](https://github.com/praat/praat)
 
----
+<br>
 
 * [PitchFinder](https://github.com/peterkhayes/pitchfinder) - A compilation of pitch detection algorithms, in TypeScript
 * [PitchDetect](https://github.com/cwilso/PitchDetect) - A simple pitch detection, in JavaScript
