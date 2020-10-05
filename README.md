@@ -9,11 +9,15 @@ and using a state machine to detect, confirm and track a sustained note.
 Pitch detectors used are YIN, MPM and a basic autocorrelation detector 
 using MPM's peak detection. See below for details.
 
-Live test page - https://swapped.ch/note-detector
+## Demo page
+
+![Note Detector Demo](https://swapped.cc/note-detector/screencap.png?z)
+
+https://swapped.ch/note-detector
 
 Screenscap of it in action - https://swapped.ch/note-detector/screencap.mp4
 
-# Background
+## Background
 
 This code is a part of a piano trainer web app that helps with learning 
 which note is where on the keyboard. 
@@ -25,14 +29,14 @@ then checks what note was played and scores the user based on that.
 As such the focus is on detection of a _single_ note under uncomplicated
 conditions.
 
-# Pitch detection
+## Pitch detection
 
 [Pitch detection](https://en.wikipedia.org/wiki/Pitch_detection)
 is an estimation a
 [fundamental frequency](https://en.wikipedia.org/wiki/Fundamental_frequency)
 of a periodic signal and it is at heart of how the note detector works.
 
-## Frequency analysis
+### Frequency analysis
 
 One of more obvious approaches to pitch detection is to compute a 
 [frequency spectrum](https://en.wikipedia.org/wiki/Spectral_density)
@@ -72,7 +76,7 @@ This could've been (probably) worked around by using a neural net
 to detect spectrum *patterns* and mapping them onto the notes. This 
 is still something to look at, as time permits.
 
-## Autocorrelation analysis
+### Autocorrelation analysis
 
 Another approach to pitch detection is to deduce the periodicity 
 directly from the raw signal by looking how similar it is to its 
@@ -98,13 +102,13 @@ for the first option and with the
 [YIN algorithm](http://audition.ens.fr/adc/pdf/2002_JASA_YIN.pdf)
 for the second.
 
-## Other considerations
+### Other considerations
 
 In addition to detecting the note, we may want to *avoid* detection
 if the signal is too quiet, too noisy or if it appears to contain
 more than one note.
 
-# How it works
+## How it works
 
 Grab a raw audio frame from the source, e.g. a mic input and feed it
 into a NoteDetector instance. This applies a window function to the
@@ -125,7 +129,7 @@ whereby `note.freq` is an estimated frequency and `note.stable` is the estimate 
 
 Internally, the detector can be in one of three states - *searching*, *confirming* and *tracking*.
 
-## Searching 
+### Searching 
 
 In this state NoteDetector polls all 3 pitch detectors. Detectors may or may not provide an estimate, so polling will yield from 0 to 3 estimates.
 
@@ -133,7 +137,7 @@ The detector then looks for a consensus. This means either `2 out of 2`, `2 out 
 
 The detector also considers the case of a *single* estimate, with 2 pitch detectors not providing one. When this happens, the detector also switches to the *Confirming* state, but as this is a weaker estimate it allocates 100 ms (2x longer) to confirm the estimate.
 
-## Confirming
+### Confirming
 
 In this state NoteDetector is trying to confirm its selection of a note.
 
@@ -143,7 +147,7 @@ If a new estimate is off or n/a, then it goes back to the *Searching* state.
 
 Otherwise, if the estimate stays about the same through the confirmation period (50 or 100 ms), the detector moves to the *Tracking* state.
 
-## Tracking
+### Tracking
 
 In this state NoteDetector is reasonably sure in its note selection and `NoteDetector.getNote()` will return the note details.
 
@@ -155,7 +159,7 @@ If all estimates are off (or none available), then it checks if the signal gone 
 
 Finally, if the signal is still fairly strong, the detector starts a timer to exit back to the *Searching* state **if** things don't improve in the next 250 ms.
 
-## Footnotes
+### Footnotes
 
 Needless to say, that all timeouts are configurable with 50/100/250 being good defaults.
 
@@ -167,9 +171,9 @@ Accords are not supported. At best they result in a detection of a strongest not
 
 Finally, it's called a *Piano* Note Detector, because that's basically what I've tested it with.
 
-# References
+## References
 
-## Papers
+### Papers
 
 * [Accurate short-term analysis of the fundamental frequency ...](https://www.fon.hum.uva.nl/paul/papers/Proceedings_1993.pdf) by Paul Boersma, 1993
 * [YIN, a fundamental frequency estimator for speech and music](http://audition.ens.fr/adc/pdf/2002_JASA_YIN.pdf) by Alain de Cheveigne, Hideki Kawahara, 2001
@@ -177,7 +181,7 @@ Finally, it's called a *Piano* Note Detector, because that's basically what I've
 * [Fast, accurate pitch detection tools for music analysis](http://www.cs.otago.ac.nz/tartini/papers/Philip_McLeod_PhD.pdf) by Philip McLeod, 2008, thesis
 * [Automatic annotation of musical audio for interactive applications](https://aubio.org/phd/thesis/brossier06thesis.pdf) by Paul M. Brossier, 2006, thesis
 
-## Articles
+### Articles
 
 * [Pitch detection algorithms](https://en.wikipedia.org/wiki/Pitch_detection_algorithm) on Wikipedia
 * [Fast Fourier transform](https://en.wikipedia.org/wiki/Fast_Fourier_transform)
@@ -199,7 +203,7 @@ Finally, it's called a *Piano* Note Detector, because that's basically what I've
 * [Piano key frequencies](https://en.wikipedia.org/wiki/Piano_key_frequencies)
 * [Equal loudness contour](https://en.wikipedia.org/wiki/Equal-loudness_contour) and [A-weighting](https://en.wikipedia.org/wiki/A-weighting)
 
-## Projects
+### Projects
 
 * [Tartini](http://www.cs.otago.ac.nz/tartini/papers.html) - The real-time music analysis tool
 * [Aubio](https://aubio.org) - A library to label music and sounds (in C language) / [git repo](https://github.com/aubio/aubio)
@@ -211,6 +215,6 @@ Finally, it's called a *Piano* Note Detector, because that's basically what I've
 * [PitchDetect](https://github.com/cwilso/PitchDetect) - A simple pitch detection, in JavaScript
 * [jsfft](https://github.com/dntj/jsfft) - A small, efficient Javascript FFT implementation
 
-## APIs
+### APIs
 
 * [Web Audio API](https://developer.mozilla.org/en-US/docs/Web/API/Web_Audio_API)
