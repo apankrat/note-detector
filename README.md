@@ -3,10 +3,11 @@
 Quick and fairly simple code for real-time detection of single piano notes in audio signal.
 
 Works by finding a consensus between 3 different pitch detection algorithms
-and using a state machine to detect, confirm and track a sustained note.
+and using a state machine to detect, confirm and track a sustained note. Pitch
+detectors used are YIN, MPM and a basic autocorrelation detector using MPM's
+peak detection.
 
-Pitch detectors used are YIN, MPM and a basic autocorrelation detector 
-using MPM's peak detection. See below for details.
+See below for details.
 
 ## Demo page
 
