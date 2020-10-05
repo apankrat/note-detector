@@ -1,7 +1,6 @@
 # Piano note detector
 
-Quick and fairly simple code to do a detection of a single piano 
-note based on a raw audio data.
+Quick and fairly simple code for real-time detection of single piano notes in audio signal.
 
 Works by finding a consensus between 3 different pitch detection algorithms
 and using a state machine to detect, confirm and track a sustained note.
