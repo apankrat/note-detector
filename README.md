@@ -1,6 +1,7 @@
 # Piano note detector
 
-Quick and fairly simple code for real-time detection of single piano notes in audio signal.
+Quick and fairly simple code for real-time detection of single piano notes 
+in audio signal.
 
 Works by finding a consensus between 3 different pitch detection algorithms
 and using a state machine to detect, confirm and track a sustained note. Pitch
@@ -20,14 +21,8 @@ Screenscap of it in action - https://swapped.ch/note-detector/screencap.mp4
 ## Background
 
 This code is a part of a piano trainer web app that helps with learning 
-which note is where on the keyboard. 
-
-Still a work in progress, the app shows a stream of notes, one by one, with 
-a variable delay and expects the user to play a respective key. The detector
-then checks what note was played and scores the user based on that.
-
-As such the focus is on detection of a _single_ note under uncomplicated
-conditions.
+which note is where on the keyboard.  As such the focus is on detection 
+of a _single_ note under relatively uncomplicated conditions.
 
 ## Pitch detection
 
@@ -70,7 +65,6 @@ The principal issue that I firsthand ran into was that the
 [harmonics](https://en.wikipedia.org/wiki/Harmonic_series_(music))
 of certain notes were stronger than their fundamental frequency.
 That is, neither picking the strongest frequency nor the lowest 
-harmonic worked reliably.
 
 This could've been (probably) worked around by using a neural net 
 to detect spectrum *patterns* and mapping them onto the notes. This 
@@ -184,21 +178,24 @@ Finally, it's called a *Piano* Note Detector, because that's basically what I've
 ### Articles
 
 * [Pitch detection algorithms](https://en.wikipedia.org/wiki/Pitch_detection_algorithm) on Wikipedia
-* [Fast Fourier transform](https://en.wikipedia.org/wiki/Fast_Fourier_transform)
-* [Constant-Q transform](https://en.wikipedia.org/wiki/Constant-Q_transform)
 * [Autocorrelation](https://en.wikipedia.org/wiki/Autocorrelation)
 
----
+--
+
+* [Fast Fourier transform](https://en.wikipedia.org/wiki/Fast_Fourier_transform)
+* [Constant-Q transform](https://en.wikipedia.org/wiki/Constant-Q_transform)
+
+--
 
 * [Window (signal tapering) functions](https://en.wikipedia.org/wiki/Window_function)
 * [Use of a window function with autocorrelation analysis](https://www.pinguinorodriguez.cl/blog/pitch-in-praat/) (in Praat)
 
----
+--
 
 * [Cepstrum](https://en.wikipedia.org/wiki/Cepstrum), a **S**pe**C**trum of spectrum.
 * [Cepstrum analysis for pitch tracking](http://flothesof.github.io/cepstrum-pitch-tracking.html)
 
----
+--
 
 * [Piano key frequencies](https://en.wikipedia.org/wiki/Piano_key_frequencies)
 * [Equal loudness contour](https://en.wikipedia.org/wiki/Equal-loudness_contour) and [A-weighting](https://en.wikipedia.org/wiki/A-weighting)
@@ -209,7 +206,7 @@ Finally, it's called a *Piano* Note Detector, because that's basically what I've
 * [Aubio](https://aubio.org) - A library to label music and sounds (in C language) / [git repo](https://github.com/aubio/aubio)
 * [Praat](https://www.fon.hum.uva.nl/praat/) - Doing phonetics by computer / [git repo](https://github.com/praat/praat)
 
----
+--
 
 * [PitchFinder](https://github.com/peterkhayes/pitchfinder) - A compilation of pitch detection algorithms, in TypeScript
 * [PitchDetect](https://github.com/cwilso/PitchDetect) - A simple pitch detection, in JavaScript
