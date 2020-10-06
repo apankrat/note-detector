@@ -1,6 +1,7 @@
 # Piano note detector
 
-Quick and fairly simple code for real-time detection of single piano notes in audio signal.
+Quick and fairly simple code for real-time detection of single piano notes 
+in audio signal.
 
 Works by finding a consensus between 3 different pitch detection algorithms
 and using a state machine to detect, confirm and track a sustained note. Pitch
@@ -20,14 +21,8 @@ Screenscap of it in action - https://swapped.ch/note-detector/screencap.mp4
 ## Background
 
 This code is a part of a piano trainer web app that helps with learning 
-which note is where on the keyboard. 
-
-Still a work in progress, the app shows a stream of notes, one by one, with 
-a variable delay and expects the user to play a respective key. The detector
-then checks what note was played and scores the user based on that.
-
-As such the focus is on detection of a _single_ note under uncomplicated
-conditions.
+which note is where on the keyboard.  As such the focus is on detection 
+of a _single_ note under relatively uncomplicated conditions.
 
 ## Pitch detection
 
@@ -70,11 +65,6 @@ The principal issue that I firsthand ran into was that the
 [harmonics](https://en.wikipedia.org/wiki/Harmonic_series_(music))
 of certain notes were stronger than their fundamental frequency.
 That is, neither picking the strongest frequency nor the lowest 
-
-25
-
-Still a work in progress, the app shows a stream of notes, one by one, with 
-harmonic worked reliably.
 
 This could've been (probably) worked around by using a neural net 
 to detect spectrum *patterns* and mapping them onto the notes. This 
